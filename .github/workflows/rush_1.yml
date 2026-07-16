@@ -1,0 +1,73 @@
+name: gha-migration/rush_1
+on:
+  push:
+  workflow_dispatch:
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+    timeout-minutes: 60
+    env:
+      APP_NAME: demo-app
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: echo "Building $APP_NAME..."
+    - run: echo "Docker Image Build Successful" > build.txt
+    - uses: actions/upload-artifact@v4.1.0
+      if: success()
+      with:
+        name: "${{ github.job }}"
+        retention-days: 1
+        path: build.txt
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+    timeout-minutes: 60
+    env:
+      APP_NAME: demo-app
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - uses: actions/download-artifact@v4.1.0
+    - run: echo "Reading artifact from build stage..."
+    - run: cat build.txt
+    - run: echo "Running Tests..."
+    - run: echo "Tests Passed" > test.txt
+    - uses: actions/upload-artifact@v4.1.0
+      if: success()
+      with:
+        name: "${{ github.job }}"
+        retention-days: 1
+        path: test.txt
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+    timeout-minutes: 60
+    env:
+      APP_NAME: demo-app
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - uses: actions/download-artifact@v4.1.0
+    - run: echo "Deploying Application..."
+    - run: cat test.txt
+    - run: echo "=========================================================="
+    - run: echo "SUCCESS! The value you entered in the UI prompt is:"
+    - run: echo "${{ job.inputs.RUNTIME_CUSTOM_VALUE }}"
+    - run: echo "=========================================================="
