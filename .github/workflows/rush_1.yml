@@ -1,6 +1,6 @@
 name: gha-migration/rush_1
 on:
-  push:
+  ##push:
   workflow_dispatch:
     inputs:
       RUNTIME_CUSTOM_VALUE:
