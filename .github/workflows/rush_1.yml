@@ -23,7 +23,7 @@ jobs:
         fetch-depth: 20
         lfs: true
     - run: echo "Building $APP_NAME..."
-    - run: echo "Docker Image Build Successful" > build.txt
+    - run: echo "Docker Image Build Successful.." > build.txt
     - uses: actions/upload-artifact@v4.1.0
       if: success()
       with:
