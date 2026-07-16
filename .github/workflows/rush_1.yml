@@ -1,4 +1,5 @@
-name: gha-migration/rush_1
+name: 🚀 gha-migration/rush_1
+
 on:
   ##push:
   workflow_dispatch:
@@ -14,72 +15,93 @@ on:
         required: true
         type: string
         default: "Demo Value"
+
 concurrency:
   group: "${{ github.ref }}"
   cancel-in-progress: true
+
 jobs:
-  build:
+  🏗️_build:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
       APP_NAME: demo-app
     steps:
-    - uses: actions/checkout@v4.1.0
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4.1.0
       with:
         fetch-depth: 20
         lfs: true
-    - run: echo "Building $APP_NAME..."
-    - run: echo "Docker Image Build Successful.." > build.txt
-    - uses: actions/upload-artifact@v4.1.0
+    - name: 🔨 Compile Application
+      run: echo "Building $APP_NAME..."
+    - name: 📝 Generate Build Report
+      run: echo "Docker Image Build Successful.." > build.txt
+    - name: 📤 Upload Build Artifact
+      uses: actions/upload-artifact@v4.1.0
       if: success()
       with:
         name: build
         retention-days: 1
         path: build.txt
-  test:
-    needs: build
+
+  🧪_test:
+    needs: 🏗️_build
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
       APP_NAME: demo-app
     steps:
-    - uses: actions/checkout@v4.1.0
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4.1.0
       with:
         fetch-depth: 20
         lfs: true
-    - uses: actions/download-artifact@v4.1.0
+    - name: 📥 Download Build Artifact
+      uses: actions/download-artifact@v4.1.0
       with:
         name: build
         path: .
-    - run: echo "Reading artifact from build stage..."
-    - run: cat build.txt
-    - run: echo "Running Tests..."
-    - run: echo "Tests Passed" > test.txt
-    - uses: actions/upload-artifact@v4.1.0
+    - name: 📖 Read Build Logs
+      run: |
+        echo "Reading artifact from build stage..."
+        cat build.txt
+    - name: 🔬 Execute Test Suite
+      run: |
+        echo "Running Tests..."
+        echo "Tests Passed" > test.txt
+    - name: 📤 Upload Test Artifact
+      uses: actions/upload-artifact@v4.1.0
       if: success()
       with:
         name: test
         retention-days: 1
         path: test.txt
-  deploy:
-    needs: test
+
+  🚏_deploy:
+    needs: 🧪_test
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
       APP_NAME: demo-app
     steps:
-    - uses: actions/checkout@v4.1.0
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4.1.0
       with:
         fetch-depth: 20
         lfs: true
-    - uses: actions/download-artifact@v4.1.0
+    - name: 📥 Download Test Artifact
+      uses: actions/download-artifact@v4.1.0
       with:
         name: test
         path: .
-    - run: echo "Deploying Application..."
-    - run: cat test.txt
-    - run: echo "=========================================================="
-    - run: echo "SUCCESS! The value you entered in the UI prompt is:"
-    - run: echo "${{ inputs.RUNTIME_CUSTOM_VALUE }}"
-    - run: echo "${{ inputs.TARGET_ENV }}"
-    - run: echo "=========================================================="
+    - name: 🛰️ Run Deployment Scripts
+      run: |
+        echo "Deploying Application..."
+        cat test.txt
+    - name: 📊 Print Configuration Details
+      run: |
+        echo "=========================================================="
+        echo "🎉 SUCCESS! The values you entered in the UI prompt are:"
+        echo "🔹 Custom Value: ${{ inputs.RUNTIME_CUSTOM_VALUE }}"
+        echo "🔹 Target Environment: ${{ inputs.TARGET_ENV }}"
+        echo "=========================================================="
