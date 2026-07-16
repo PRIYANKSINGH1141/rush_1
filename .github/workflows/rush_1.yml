@@ -81,4 +81,5 @@ jobs:
     - run: echo "=========================================================="
     - run: echo "SUCCESS! The value you entered in the UI prompt is:"
     - run: echo "${{ inputs.RUNTIME_CUSTOM_VALUE }}"
+    - run: echo "${{ inputs.TARGET_ENV }}"
     - run: echo "=========================================================="
