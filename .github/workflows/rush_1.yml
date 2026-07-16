@@ -2,6 +2,12 @@ name: gha-migration/rush_1
 on:
   push:
   workflow_dispatch:
+    inputs:
+      RUNTIME_CUSTOM_VALUE:
+        description: "Enter Runtime Value"
+        required: true
+        type: string
+        default: "Demo Value"
 concurrency:
   group: "${{ github.ref }}"
   cancel-in-progress: true
@@ -38,7 +44,7 @@ jobs:
     - uses: actions/download-artifact@v4.1.0
       with:
         name: build
-        path: build.txt
+        path: .
     - run: echo "Reading artifact from build stage..."
     - run: cat build.txt
     - run: echo "Running Tests..."
@@ -63,10 +69,10 @@ jobs:
     - uses: actions/download-artifact@v4.1.0
       with:
         name: test
-        path: test.txt
+        path: .
     - run: echo "Deploying Application..."
     - run: cat test.txt
     - run: echo "=========================================================="
     - run: echo "SUCCESS! The value you entered in the UI prompt is:"
-    - run: echo "${{ job.inputs.RUNTIME_CUSTOM_VALUE }}"
+    - run: echo "${{ inputs.RUNTIME_CUSTOM_VALUE }}"
     - run: echo "=========================================================="
