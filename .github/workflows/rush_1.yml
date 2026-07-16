@@ -8,6 +8,16 @@ on:
         required: true
         type: string
         default: "Demo Value"
+        
+      TARGET_ENV:
+        description: 'Select target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - QA
+          - production
 concurrency:
   group: "${{ github.ref }}"
   cancel-in-progress: true
